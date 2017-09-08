@@ -344,30 +344,6 @@ namespace MIPS32_Sim_Core {
             chip.LO = lastLo;
         }
     }
-    //public class Op_maddu : IOperation {
-    //    private int rs, rt;
-    //    private UInt32 lastHi, lastLo;
-    //    public Op_maddu(int rs, int rt) {
-    //        this.rs = rs;
-    //        this.rt = rt;
-    //    }
-    //    public void doOp(MIPSChip_Instance chip) {
-    //        lastHi = chip.HI;
-    //        lastLo = chip.LO;
-    //        UInt64 result = unchecked((UInt64)chip.getRegister(rs) * (UInt64)chip.getRegister(rt));
-    //        chip.HI = (UInt32)(result >> 32);
-    //        chip.LO = (UInt32)(result & 0x0000FFFF);
-    //    }
-
-    //    public uint getByteCode() {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public void undoOp(MIPSChip_Instance chip) {
-    //        chip.HI = lastHi;
-    //        chip.LO = lastLo;
-    //    }
-    //}
 
     //MSUB
     public class Op_msub : IOperation {
@@ -474,10 +450,88 @@ namespace MIPS32_Sim_Core {
             chip.LO = lastLo;
         }
     }
+
     //MULTU
+    public class Op_multu : IOperation {
+        private int rs, rt;
+        private UInt32 lastHi, lastLo;
+        public Op_multu(int rs, int rt) {
+            this.rs = rs;
+            this.rt = rt;
+        }
+        public void doOp(MIPSChip_Instance chip) {
+            lastHi = chip.HI;
+            lastLo = chip.LO;
+            UInt64 result = unchecked((UInt64)chip.getRegister(rs) * (UInt64)chip.getRegister(rt));
+            chip.HI = (UInt32)(result >> 32);
+            chip.LO = (UInt32)(result & 0x0000FFFF);
+        }
+
+        public uint getByteCode() {
+            throw new NotImplementedException();
+        }
+
+        public void undoOp(MIPSChip_Instance chip) {
+            chip.HI = lastHi;
+            chip.LO = lastLo;
+        }
+    }
+
     //SEB
+    public class Op_seb : IOperation {
+        private int rt, rd;
+        private UInt32 last;
+        public Op_seb(int rt, int rd) {
+            this.rt = rt;
+            this.rd = rd;
+        }
+        public void doOp(MIPSChip_Instance chip) {
+            last = chip.getRegister(rd);
+            UInt32 temp = chip.getRegister(rt) | 0xffffff00;
+            if (temp < 0xffffff80) {
+                temp &= 0x000000ff;
+            }
+            chip.setRegister(rd, temp);
+        }
+
+        public uint getByteCode() {
+            throw new NotImplementedException();
+        }
+
+        public void undoOp(MIPSChip_Instance chip) {
+            chip.setRegister(rd, last);
+        }
+    }
+
     //SEH
+    public class Op_seh : IOperation {
+        private int rt, rd;
+        private UInt32 last;
+        public Op_seh(int rt, int rd) {
+            this.rt = rt;
+            this.rd = rd;
+        }
+        public void doOp(MIPSChip_Instance chip) {
+            last = chip.getRegister(rd);
+            UInt32 temp = chip.getRegister(rt) | 0xffff0000;
+            if (temp < 0xffff8000) {
+                temp &= 0x0000ffff;
+            }
+
+            chip.setRegister(rd, temp);
+        }
+
+        public uint getByteCode() {
+            throw new NotImplementedException();
+        }
+
+        public void undoOp(MIPSChip_Instance chip) {
+            chip.setRegister(rd, last);
+        }
+    }
+
     //SLT
+
     //SLTI
     //SLTIU
     //SLTU
